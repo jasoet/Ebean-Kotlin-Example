@@ -1,2 +1,8 @@
 rootProject.name = 'example-gradle-kotlin'
 
+buildCache {
+  local {
+      enabled = false
+    }
+}
+

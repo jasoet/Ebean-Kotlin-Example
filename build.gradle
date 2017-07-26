@@ -1,6 +1,3 @@
-group 'org.example'
-version '1.0-SNAPSHOT'
-
 buildscript {
   ext.kotlin_version = '1.1.3-2'
 
@@ -8,15 +5,22 @@ buildscript {
     mavenLocal()
     mavenCentral()
   }
+
   dependencies {
     classpath "io.ebean:ebean-gradle-plugin:10.2.2"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
 
+plugins {
+    id "org.jetbrains.kotlin.kapt" version "1.1.3-2"
+}
+
 apply plugin: 'kotlin'
-apply plugin: 'kotlin-kapt'
 apply plugin: 'ebean'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
 
 repositories {
   mavenLocal()
@@ -25,7 +29,7 @@ repositories {
 
 dependencies {
   kapt "io.ebean:kotlin-querybean-generator:10.1.2"
-  compile "io.ebean:ebean:10.3.1"
+  compile "io.ebean:ebean:10.4.1"
   compile "io.ebean:ebean-querybean:10.3.1"
   compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
   testCompile "org.avaje.composite:composite-testing:3.1"
@@ -35,6 +39,14 @@ sourceSets {
   main.kotlin.srcDirs += [file("$buildDir/generated/source/kaptKotlin/main")]
 }
 
+task cleanCache(type: Exec) {
+    workingDir "${projectDir}"
+    executable "rm"
+    args "-rvf", ".gradle"
+}
+
+clean.dependsOn cleanCache
+
 ebean {
   debugLevel = 9
 }
@@ -43,4 +55,8 @@ test {
   useTestNG()
   testLogging.showStandardStreams = true
   testLogging.exceptionFormat = 'full'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0.1'
 }
